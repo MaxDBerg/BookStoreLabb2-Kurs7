@@ -1,9 +1,13 @@
+using MinimalAPI_Books.Data;
+using MinimalAPI_Books.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
 
 var app = builder.Build();
 
@@ -16,29 +20,49 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/books", async (IBookRepository repository) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var book = await repository.GetAllAsync();
 
-app.MapGet("/weatherforecast", () =>
+    if (book == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(book);
+});
+
+app.MapGet("/books/{id}", async (IBookRepository repository, int id) =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+    var book = await repository.GetByIdAsync(id);
+
+    if (book == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(book);
+});
+
+app.MapPost("/books", async (IBookRepository repository, Book book) =>
+{
+    await repository.AddAsync(book);
+    return Results.Created($"/books/{book.Id}", book);
+});
+
+app.MapPut("/books/{id}", async (IBookRepository repository, int id, Book book) =>
+{
+    if (id != book.Id)
+    {
+        return Results.BadRequest();
+    }
+
+    await repository.UpdateAsync(book);
+    return Results.Ok(book);
+});
+
+app.MapDelete("/books/{id}", async (IBookRepository repository, int id) =>
+{
+    await repository.DeleteAsync(id);
+    return Results.Ok();
+});
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
