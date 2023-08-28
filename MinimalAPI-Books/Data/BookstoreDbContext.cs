@@ -15,6 +15,7 @@ namespace MinimalAPI_Books.Data
             modelBuilder.ApplyConfiguration(new LanguageSeed());
             modelBuilder.ApplyConfiguration(new AuthorSeed());
 
+            modelBuilder.Entity<BookGenre>().HasNoKey();
         }
 
         public DbSet<Book> Books { get; set; }
