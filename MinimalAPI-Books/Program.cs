@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using MinimalAPI_Books.Data;
 using MinimalAPI_Books.Models;
 
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddDbContext<BookstoreDbContext>(options => 
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
