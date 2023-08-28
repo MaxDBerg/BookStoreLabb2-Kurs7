@@ -5,9 +5,9 @@ namespace MinimalAPI_Books.Data
 {
     public class BookRepository : IBookRepository
     {
-        private readonly DbContext _dbContext;
+        private readonly BookstoreDbContext _dbContext;
 
-        public BookRepository(DbContext dbContext)
+        public BookRepository(BookstoreDbContext dbContext)
         {
             _dbContext = dbContext;
         }
