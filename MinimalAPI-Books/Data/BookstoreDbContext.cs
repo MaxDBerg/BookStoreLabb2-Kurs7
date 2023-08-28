@@ -11,8 +11,9 @@ namespace MinimalAPI_Books.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new GenreLanguageSeed());
+            modelBuilder.ApplyConfiguration(new GenreSeed());
             modelBuilder.ApplyConfiguration(new LanguageSeed());
+            modelBuilder.ApplyConfiguration(new AuthorSeed());
 
         }
 
