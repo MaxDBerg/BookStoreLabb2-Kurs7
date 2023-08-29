@@ -22,14 +22,22 @@ namespace MinimalAPI_Books.Data
             return await _dbContext.Set<Book>().ToListAsync();
         }
 
-        public async Task AddAsync(Book book)
+        public async Task AddAsync(Book book, int genreId)
         {
             if (book == null)
             {
                 throw new ArgumentNullException(nameof(book));
             }
 
-            await _dbContext.AddAsync(book);
+            Language language = await _dbContext.Languages.FindAsync(book.LanguageId);
+            Author author = await _dbContext.Authors.FindAsync(book.AuthorId);
+
+            book.Language = language;
+            book.Author = author;
+
+            book.Genres.Add(_dbContext.Genres.Find(genreId));
+
+            await _dbContext.Books.AddAsync(book);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -40,7 +48,7 @@ namespace MinimalAPI_Books.Data
                 throw new ArgumentNullException(nameof(book));
             }
 
-            _dbContext.Entry(book).State = EntityState.Modified;
+            _dbContext.Books.Entry(book).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
         }
 
@@ -49,7 +57,7 @@ namespace MinimalAPI_Books.Data
             var book = await GetByIdAsync(id);
             if (book != null)
             {
-                await _dbContext.AddAsync(book);
+                await _dbContext.Books.AddAsync(book);
                 await _dbContext.SaveChangesAsync();
             }
         }

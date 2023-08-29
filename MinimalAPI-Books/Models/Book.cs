@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MinimalAPI_Books.Models
 {
@@ -12,11 +13,13 @@ namespace MinimalAPI_Books.Models
         public bool IsLoanable { get; set; }
 
         public int LanguageId { get; set; }
+        [JsonIgnore]
         public Language Language { get; set; }
 
         public int AuthorId { get; set; }
+        [JsonIgnore]
         public Author Author { get; set; }
-
-        public ICollection<Genre> Genres { get; set; }
+        [JsonIgnore]
+        public ICollection<Genre> Genres { get; set; } = new List<Genre>();
     }
 }

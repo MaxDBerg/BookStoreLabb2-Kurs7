@@ -45,9 +45,9 @@ app.MapGet("/books/{id}", async (IBookRepository repository, int id) =>
     return Results.Ok(book);
 });
 
-app.MapPost("/books", async (IBookRepository repository, Book book) =>
+app.MapPost("/books", async (IBookRepository repository, Book book, int genreId) =>
 {
-    await repository.AddAsync(book);
+    await repository.AddAsync(book, genreId);
     return Results.Created($"/books/{book.Id}", book);
 });
 

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MinimalAPI_Books.Models
 {
@@ -8,6 +9,6 @@ namespace MinimalAPI_Books.Models
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public ICollection<Book> Books { get; set; }
+        public ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }

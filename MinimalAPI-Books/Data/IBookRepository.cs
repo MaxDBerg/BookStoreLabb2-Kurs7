@@ -6,7 +6,7 @@ namespace MinimalAPI_Books.Data
     {
         Task<Book> GetByIdAsync(int id);
         Task<IEnumerable<Book>> GetAllAsync();
-        Task AddAsync(Book book);
+        Task AddAsync(Book book, int genreId);
         Task UpdateAsync(Book book);
         Task DeleteAsync(int id);
     }
