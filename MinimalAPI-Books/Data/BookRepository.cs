@@ -57,7 +57,7 @@ namespace MinimalAPI_Books.Data
             var book = await GetByIdAsync(id);
             if (book != null)
             {
-                await _dbContext.Books.AddAsync(book);
+                _dbContext.Books.Remove(book);
                 await _dbContext.SaveChangesAsync();
             }
         }
