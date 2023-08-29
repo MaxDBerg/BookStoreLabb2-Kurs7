@@ -7,21 +7,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookStore.UnitTests
+namespace BookStore.UnitTests.Fixtures
 {
     public class BookRepositoryTestFixture : IDisposable
     {
-        public BookstoreDbContext _testDbContext { get; private set; }
-        public BookRepository _bookRepository { get; private set; }
+        public DbContextOptions<BookstoreDbContext> _options { get; private set; }
+
         public BookRepositoryTestFixture()
         {
-            var _options = new DbContextOptionsBuilder<BookstoreDbContext>()
+            _options = new DbContextOptionsBuilder<BookstoreDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
                 .Options;
-            _testDbContext = new BookstoreDbContext(_options);
-            _bookRepository = new BookRepository(_testDbContext);
         }
-        public async Task SeedDatabase()
+        public DbContextOptions<BookstoreDbContext> GetUniqueOptions()
+        {
+            var databaseName = Guid.NewGuid().ToString();
+            return new DbContextOptionsBuilder<BookstoreDbContext>()
+                .UseInMemoryDatabase(databaseName: databaseName)
+                .Options;
+        }
+        public async Task SeedDatabaseAsync(BookstoreDbContext context)
         {
             //Seed the database with test data
             var authors = new List<Author> {
@@ -57,16 +62,20 @@ namespace BookStore.UnitTests
             };
 
             //Adding the data to in-memory database
-            await _testDbContext.Authors.AddRangeAsync(authors);
-            await _testDbContext.Languages.AddRangeAsync(languages);
-            await _testDbContext.Genres.AddRangeAsync(genres);
-            await _testDbContext.Books.AddRangeAsync(books);
+            await context.Authors.AddRangeAsync(authors);
+            await context.Languages.AddRangeAsync(languages);
+            await context.Genres.AddRangeAsync(genres);
+            await context.Books.AddRangeAsync(books);
 
-            _testDbContext.SaveChanges();
+            //_testDbContext.Authors.AddRange(authors);
+            //_testDbContext.Languages.AddRange(languages);
+            //_testDbContext.Genres.AddRange(genres);
+            //_testDbContext.Books.AddRange(books);
+
+            context.SaveChanges();
         }
         public void Dispose()
         {
-            _testDbContext.Dispose();
         }
     }
 }
