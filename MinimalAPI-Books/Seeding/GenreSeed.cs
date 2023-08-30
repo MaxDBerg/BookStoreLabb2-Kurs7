@@ -1,4 +1,4 @@
-﻿namespace MinimalAPI_Books.Data
+﻿namespace MinimalAPI_Books.Seeding
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MinimalAPI_Books.Data;
 using MinimalAPI_Books.Models;
+using MinimalAPI_Books.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

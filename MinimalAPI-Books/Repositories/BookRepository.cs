@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MinimalAPI_Books.Data;
 using MinimalAPI_Books.Models;
 
-namespace MinimalAPI_Books.Data
+namespace MinimalAPI_Books.Repositories
 {
     public class BookRepository : IBookRepository
     {

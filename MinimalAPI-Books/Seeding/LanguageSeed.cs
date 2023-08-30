@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MinimalAPI_Books.Models;
 
-namespace MinimalAPI_Books.Data
+namespace MinimalAPI_Books.Seeding
 {
     public class LanguageSeed : IEntityTypeConfiguration<Language>
     {

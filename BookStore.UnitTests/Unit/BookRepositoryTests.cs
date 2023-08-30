@@ -3,6 +3,7 @@ using BookStore.UnitTests.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using MinimalAPI_Books.Data;
 using MinimalAPI_Books.Models;
+using MinimalAPI_Books.Repositories;
 
 namespace BookStore.UnitTests.Unit
 {

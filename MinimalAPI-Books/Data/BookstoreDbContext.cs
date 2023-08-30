@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MinimalAPI_Books.Models;
+using MinimalAPI_Books.Seeding;
 
 namespace MinimalAPI_Books.Data
 {

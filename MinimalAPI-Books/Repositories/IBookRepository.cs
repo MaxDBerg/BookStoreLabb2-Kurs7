@@ -1,6 +1,6 @@
 ﻿using MinimalAPI_Books.Models;
 
-namespace MinimalAPI_Books.Data
+namespace MinimalAPI_Books.Repositories
 {
     public interface IBookRepository
     {
