@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using MinimalAPI_Books.Data;
 using MinimalAPI_Books.Models;
 
@@ -25,11 +26,6 @@ namespace MinimalAPI_Books.Repositories
 
         public async Task AddAsync(Book book, int genreId)
         {
-            if (book == null)
-            {
-                throw new ArgumentNullException(nameof(book));
-            }
-
             Language language = await _dbContext.Languages.FindAsync(book.LanguageId);
             Author author = await _dbContext.Authors.FindAsync(book.AuthorId);
 
@@ -44,11 +40,6 @@ namespace MinimalAPI_Books.Repositories
 
         public async Task UpdateAsync(Book book)
         {
-            if (book == null)
-            {
-                throw new ArgumentNullException(nameof(book));
-            }
-
             _dbContext.Books.Entry(book).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
         }

@@ -1,4 +1,5 @@
-﻿using MinimalAPI_Books.Models;
+﻿using FluentValidation;
+using MinimalAPI_Books.Models;
 
 namespace MinimalAPI_Books.Repositories
 {
