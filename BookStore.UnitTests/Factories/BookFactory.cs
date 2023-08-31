@@ -19,5 +19,16 @@ namespace BookStore.UnitTests.Factories
                 Description = description
             };
         }
+        public static Book CreateBookWithId(int id, string title, string description, int languageId, int authorId)
+        {
+            return new Book
+            {
+                Id = id,
+                Title = title,
+                LanguageId = languageId,
+                AuthorId = authorId,
+                Description = description
+            };
+        }
     }
 }
