@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace BookStore.UnitTests.Unit
 {
-    public class BookValidatorTests : IClassFixture<BookRepositoryTestFixture>
+    public class BookCreateValidatorTests : IClassFixture<BookRepositoryTestFixture>
     {
         private readonly BookstoreDbContext _dbContext;
         private readonly BookRepositoryTestFixture _fixture;
-        public BookValidatorTests(BookRepositoryTestFixture fixture)
+        public BookCreateValidatorTests(BookRepositoryTestFixture fixture)
         {
             _fixture = fixture;
             _dbContext = new BookstoreDbContext(_fixture.GetUniqueOptions());
@@ -28,7 +28,7 @@ namespace BookStore.UnitTests.Unit
         public async Task ShouldHaveValidationErrorFor_EmptyFieldsAsync(string title, string description, int languageId, int authorId, string errorMessage)
         {
             //arrange
-            var _validator = new BookValidator(_dbContext);
+            var _validator = new BookCreateValidator(_dbContext);
             var book = BookFactory.CreateBook(title, description, languageId, authorId);
 
             //act
@@ -37,14 +37,14 @@ namespace BookStore.UnitTests.Unit
             //assert
             Assert.NotNull(result);
             Assert.False(result.IsValid);
-            Assert.Equal(errorMessage, result.Errors.FirstOrDefault().ErrorMessage);
+            Assert.Equal(errorMessage, result.Errors[0].ErrorMessage);
         }
 
         [Fact]
         public async Task ShouldHaveValidationErrors_ForMultipleEmptyFieldsAsync()
         {
             // Arrange
-            var _validator = new BookValidator(_dbContext);
+            var _validator = new BookCreateValidator(_dbContext);
             var book = BookFactory.CreateBook("", "", -1, -2);
 
             // Act
@@ -64,7 +64,7 @@ namespace BookStore.UnitTests.Unit
         {
             //arrange
             await _fixture.SeedDatabaseAsync(_dbContext);
-            var _validator = new BookValidator(_dbContext);
+            var _validator = new BookCreateValidator(_dbContext);
             var book = BookFactory.CreateBook("Duplicate Title", "Test Description 1", 1, 1);
             _dbContext.Add(book);
             await _dbContext.SaveChangesAsync();
@@ -75,7 +75,7 @@ namespace BookStore.UnitTests.Unit
             //assert
             Assert.NotNull(result);
             Assert.False(result.IsValid);
-            Assert.Equal("Title must be unique", result.Errors.FirstOrDefault().ErrorMessage);
+            Assert.Equal("Title must be unique", result.Errors[0].ErrorMessage);
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace BookStore.UnitTests.Unit
         {
             // Arrange
             var book = BookFactory.CreateBook("Validator Name", "Interesting Description", 1, 1);
-            var _validator = new BookValidator(_dbContext);
+            var _validator = new BookCreateValidator(_dbContext);
 
 
             // Act

@@ -6,10 +6,10 @@ using System.Linq;
 
 namespace MinimalAPI_Books.Validators
 {
-    public class BookValidator : AbstractValidator<Book>
+    public class BookCreateValidator : AbstractValidator<Book>
     {
         private readonly BookstoreDbContext _dbContext;
-        public BookValidator(BookstoreDbContext dbContext)
+        public BookCreateValidator(BookstoreDbContext dbContext)
         {
             _dbContext = dbContext;
 
@@ -19,8 +19,8 @@ namespace MinimalAPI_Books.Validators
             RuleFor(book => book.Description)
                 .NotEmpty().WithMessage("Description is required")
                 .MaximumLength(500).WithMessage("Description must not exceed 500 characters");
-            RuleFor(book => book.LanguageId).GreaterThan(0).WithMessage("Language is required");
-            RuleFor(book => book.AuthorId).GreaterThan(0).WithMessage("Author is required");
+            RuleFor(book => book.LanguageId).GreaterThan(0).WithMessage("LanguageId has to be greater than 0");
+            RuleFor(book => book.AuthorId).GreaterThan(0).WithMessage("AuthorId has to be greater than 0");
         }
 
         public bool BeUniqueTitle(string title) => !_dbContext.Books.Any(book => book.Title == title);
