@@ -1,7 +1,9 @@
-﻿using BookStore.UnitTests.Factories;
+﻿using AutoMapper;
+using BookStore.UnitTests.Factories;
 using BookStore.UnitTests.Fixtures;
 using MinimalAPI_Books.Data;
 using MinimalAPI_Books.Models;
+using MinimalAPI_Books.Repositories;
 using MinimalAPI_Books.Validators;
 using System;
 using System.Collections.Generic;
@@ -15,21 +17,24 @@ namespace BookStore.UnitTests.Unit
     {
         private readonly BookstoreDbContext _dbContext;
         private readonly BookRepositoryTestFixture _fixture;
+        private readonly IMapper _mapper;
+
         public BookCreateValidatorTests(BookRepositoryTestFixture fixture)
         {
             _fixture = fixture;
+            _mapper = _fixture.mapper;
             _dbContext = new BookstoreDbContext(_fixture.GetUniqueOptions());
         }
 
         [Theory]
         [InlineData("", "Test Description 1", 1, 1, "Title is required")]
-        [InlineData("Test Title 2", "Test Description 2", -1, 2, "Language is required")]
-        [InlineData("Test Title 3", "Test Description 3", 3, -2, "Author is required")]
+        [InlineData("Test Title 2", "Test Description 2", -1, 2, "LanguageId has to be greater than 0")]
+        [InlineData("Test Title 3", "Test Description 3", 3, -2, "AuthorId has to be greater than 0")]
         public async Task ShouldHaveValidationErrorFor_EmptyFieldsAsync(string title, string description, int languageId, int authorId, string errorMessage)
         {
             //arrange
-            var _validator = new BookCreateValidator(_dbContext);
-            var book = BookFactory.CreateBook(title, description, languageId, authorId);
+            var _validator = new BookCreateDTOValidator(_dbContext);
+            var book = BookFactory.CreateBook_DTO(title, description, languageId, authorId, _fixture.genreIds);
 
             //act
             var result = await _validator.ValidateAsync(book);
@@ -44,8 +49,8 @@ namespace BookStore.UnitTests.Unit
         public async Task ShouldHaveValidationErrors_ForMultipleEmptyFieldsAsync()
         {
             // Arrange
-            var _validator = new BookCreateValidator(_dbContext);
-            var book = BookFactory.CreateBook("", "", -1, -2);
+            var _validator = new BookCreateDTOValidator(_dbContext);
+            var book = BookFactory.CreateBook_DTO("", "", -1, -2, _fixture.genreIds);
 
             // Act
             var result = await _validator.ValidateAsync(book);
@@ -55,8 +60,8 @@ namespace BookStore.UnitTests.Unit
             Assert.False(result.IsValid);
             Assert.Contains(result.Errors, error => error.PropertyName == nameof(Book.Title) && error.ErrorMessage == "Title is required");
             Assert.Contains(result.Errors, error => error.PropertyName == nameof(Book.Description) && error.ErrorMessage == "Description is required");
-            Assert.Contains(result.Errors, error => error.PropertyName == nameof(Book.LanguageId) && error.ErrorMessage == "Language is required");
-            Assert.Contains(result.Errors, error => error.PropertyName == nameof(Book.AuthorId) && error.ErrorMessage == "Author is required");
+            Assert.Contains(result.Errors, error => error.PropertyName == nameof(Book.LanguageId) && error.ErrorMessage == "LanguageId has to be greater than 0");
+            Assert.Contains(result.Errors, error => error.PropertyName == nameof(Book.AuthorId) && error.ErrorMessage == "AuthorId has to be greater than 0");
         }
 
         [Fact]
@@ -64,10 +69,10 @@ namespace BookStore.UnitTests.Unit
         {
             //arrange
             await _fixture.SeedDatabaseAsync(_dbContext);
-            var _validator = new BookCreateValidator(_dbContext);
-            var book = BookFactory.CreateBook("Duplicate Title", "Test Description 1", 1, 1);
-            _dbContext.Add(book);
-            await _dbContext.SaveChangesAsync();
+            var _validator = new BookCreateDTOValidator(_dbContext);
+            var book = BookFactory.CreateBook_DTO("Duplicate Title", "Test Description 1", 1, 1, _fixture.genreIds);
+            var repository = new BookRepository(_dbContext, _mapper);
+            await repository.AddAsync(book);
 
             //act
             var result = await _validator.ValidateAsync(book);
@@ -82,8 +87,8 @@ namespace BookStore.UnitTests.Unit
         public void ShouldNotHaveValidationErrorFor_ValidBook()
         {
             // Arrange
-            var book = BookFactory.CreateBook("Validator Name", "Interesting Description", 1, 1);
-            var _validator = new BookCreateValidator(_dbContext);
+            var book = BookFactory.CreateBook_DTO("Validator Name", "Interesting Description", 1, 1, _fixture.genreIds);
+            var _validator = new BookCreateDTOValidator(_dbContext);
 
 
             // Act

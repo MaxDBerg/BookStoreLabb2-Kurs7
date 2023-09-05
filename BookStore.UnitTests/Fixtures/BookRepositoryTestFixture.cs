@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using MinimalAPI_Books;
 using MinimalAPI_Books.Data;
 using MinimalAPI_Books.Models;
 using System;
@@ -11,13 +13,23 @@ namespace BookStore.UnitTests.Fixtures
 {
     public class BookRepositoryTestFixture : IDisposable
     {
-        public DbContextOptions<BookstoreDbContext> _options { get; private set; }
+        public DbContextOptions<BookstoreDbContext> options { get; private set; }
+        public IMapper mapper { get; private set; }
+        public List<int> genreIds { get; private set; }
 
         public BookRepositoryTestFixture()
         {
-            _options = new DbContextOptionsBuilder<BookstoreDbContext>()
+            options = new DbContextOptionsBuilder<BookstoreDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
                 .Options;
+
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<MappingProfile>();
+            });
+            mapper = configuration.CreateMapper();
+            genreIds = new List<int> { 1, 2, 3 };
+
         }
         public DbContextOptions<BookstoreDbContext> GetUniqueOptions()
         {
@@ -76,6 +88,10 @@ namespace BookStore.UnitTests.Fixtures
         }
         public void Dispose()
         {
+            using (var context = new BookstoreDbContext(options))
+            {
+                context.Database.EnsureDeleted();
+            }
         }
     }
 }
