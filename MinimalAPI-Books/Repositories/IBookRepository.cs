@@ -1,15 +1,8 @@
-﻿using FluentValidation;
-using MinimalAPI_Books.Models;
+﻿using MinimalAPI_Books.Models.DTO;
 
 namespace MinimalAPI_Books.Repositories
 {
-    public interface IBookRepository
+    public interface IBookRepository<T> : IRepository<T> where T : IBookDTO
     {
-        Task<Book> GetByIdAsync(int id);
-        Task<IEnumerable<Book>> GetAllAsync();
-        Task AddAsync(Book book, int genreId);
-        Task UpdateAsync(Book book);
-        Task DeleteAsync(int id);
     }
-
 }

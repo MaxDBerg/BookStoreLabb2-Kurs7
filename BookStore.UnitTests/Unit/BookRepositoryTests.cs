@@ -4,6 +4,7 @@ using BookStore.UnitTests.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using MinimalAPI_Books.Data;
 using MinimalAPI_Books.Models;
+using MinimalAPI_Books.Models.DTO.BookDTO;
 using MinimalAPI_Books.Repositories;
 
 namespace BookStore.UnitTests.Unit
@@ -27,7 +28,7 @@ namespace BookStore.UnitTests.Unit
             {
                 //Arrange
                 await _fixture.SeedDatabaseAsync(context);
-                var bookRepository = new BookRepository(context, _mapper);
+                var bookRepository = new BookRepository<BookReadDTO>(context, _mapper);
 
                 //Act
                 var result = await bookRepository.GetByIdAsync(2);
@@ -45,7 +46,7 @@ namespace BookStore.UnitTests.Unit
             {
                 //Arrange
                 await _fixture.SeedDatabaseAsync(context);
-                var bookRepository = new BookRepository(context, _mapper);
+                var bookRepository = new BookRepository<BookReadDTO>(context, _mapper);
 
                 //Act
                 var result = await bookRepository.GetAllAsync();
@@ -66,7 +67,7 @@ namespace BookStore.UnitTests.Unit
             {
                 //Arrange
                 await _fixture.SeedDatabaseAsync(context);
-                var bookRepository = new BookRepository(context, _mapper);
+                var bookRepository = new BookRepository<BookCreateDTO>(context, _mapper);
                 
                 var bookDTO = BookFactory.CreateBook_DTO(bookTitle, bookDescription, bookLanguageId, bookAuthorId, _fixture.genreIds);
 
@@ -87,13 +88,14 @@ namespace BookStore.UnitTests.Unit
             {
                 //Arrange
                 await _fixture.SeedDatabaseAsync(context);
-                var bookRepository = new BookRepository(context, _mapper);
+                var bookReadRepository = new BookRepository<BookReadDTO>(context, _mapper);
+                var bookUpdateRepository = new BookRepository<BookUpdateDTO>(context, _mapper);
                 var genreIdList = new List<int> { 1, 2 };
                 var updatedBook = BookFactory.UpdateBookWithId_DTO(8, "Updated Title", "Updated Description", 1, 2, genreIdList);
 
                 // Act
-                await bookRepository.UpdateAsync(updatedBook);
-                var book = await bookRepository.GetByIdAsync(8);
+                await bookUpdateRepository.UpdateAsync(updatedBook);
+                var book = await bookReadRepository.GetByIdAsync(8);
 
                 // Assert
                 Assert.NotNull(updatedBook);
@@ -108,7 +110,7 @@ namespace BookStore.UnitTests.Unit
             {
                 //Arrange
                 await _fixture.SeedDatabaseAsync(context);
-                var bookRepository = new BookRepository(context, _mapper);
+                var bookRepository = new BookRepository<BookReadDTO>(context, _mapper);
                 var book = await bookRepository.GetByIdAsync(1);
 
                 //Act
@@ -127,7 +129,7 @@ namespace BookStore.UnitTests.Unit
             {
                 //Arrange
                 await _fixture.SeedDatabaseAsync(context);
-                var bookRepository = new BookRepository(context, _mapper);
+                var bookRepository = new BookRepository<BookReadDTO>(context, _mapper);
                 var book = await bookRepository.GetByIdAsync(1);
 
                 //Act

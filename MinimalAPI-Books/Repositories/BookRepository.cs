@@ -1,59 +1,98 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using MinimalAPI_Books.Data;
 using MinimalAPI_Books.Models;
+using MinimalAPI_Books.Models.DTO;
+using MinimalAPI_Books.Models.DTO.BookDTO;
+using System.Net;
 
 namespace MinimalAPI_Books.Repositories
 {
-    public class BookRepository : IBookRepository
+    public class BookRepository<T> : IBookRepository<T> where T : IBookDTO
     {
         private readonly BookstoreDbContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public BookRepository(BookstoreDbContext dbContext)
+        public BookRepository(BookstoreDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
-        public async Task<Book> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
-            return await _dbContext.Set<Book>().FindAsync(id);
+            var bookEntity = await _dbContext.Set<Book>()
+                .Include(b => b.Language)
+                .Include(b => b.Author)
+                .Include(b => b.Genres)
+                .FirstOrDefaultAsync(b => b.Id == id);
+            return _mapper.Map<T>(bookEntity);
         }
 
-        public async Task<IEnumerable<Book>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dbContext.Set<Book>().ToListAsync();
+            var booksEntity = await _dbContext.Set<Book>()
+                .Include(b => b.Language)
+                .Include(b => b.Author)
+                .Include(b => b.Genres)
+                .ToListAsync();
+            return _mapper.Map<IEnumerable<T>>(booksEntity);
         }
 
-        public async Task AddAsync(Book book, int genreId)
+        public async Task AddAsync(T bookDTO)
         {
-            Language language = await _dbContext.Languages.FindAsync(book.LanguageId);
-            Author author = await _dbContext.Authors.FindAsync(book.AuthorId);
+            var bookDTOEntity = _mapper.Map<BookCreateDTO>(bookDTO);
+            var bookEntity = _mapper.Map<Book>(bookDTO);
 
-            book.Language = language;
-            book.Author = author;
+            // Fetch and associate genres with the book
+            var genres = await _dbContext.Genres.Where(g => bookDTOEntity.GenreIds.Contains(g.Id)).ToListAsync();
 
-            book.Genres.Add(_dbContext.Genres.Find(genreId));
+            // Ensure that all specified genres exist
+            if (genres.Count != bookDTOEntity.GenreIds.Count)
+            {
+                throw new Exception("One or more genres not found."); // Handle this exception appropriately
+            }
 
-            await _dbContext.Books.AddAsync(book);
+            // Associate genres with the book
+            bookEntity.Genres = genres;
+
+            _dbContext.Attach(bookEntity);
+            await _dbContext.Books.AddAsync(bookEntity);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Book book)
+        public async Task UpdateAsync(T bookDTO)
         {
-            _dbContext.Books.Entry(book).State = EntityState.Modified;
+            var bookDTOEntity = _mapper.Map<BookUpdateDTO>(bookDTO);
+
+            var existingBook = await _dbContext.Books
+                .Include(b => b.Genres) // Include the genres to avoid lazy loading
+                .FirstOrDefaultAsync(b => b.Id == bookDTOEntity.Id);
+
+            existingBook.Genres.Clear();
+
+            //var genres = await _dbContext.Genres.Where(g => bookDTO.GenreIds.Contains(g.Id)).ToListAsync();
+            //existingBook.Genres = genres;
+            var genres = await _dbContext.Genres.Where(g => bookDTOEntity.GenreIds.Contains(g.Id)).ToListAsync();
+
+            existingBook.Genres = genres;
+
+            _mapper.Map(bookDTOEntity, existingBook);
+
+            _dbContext.Books.Entry(existingBook).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var book = await GetByIdAsync(id);
+            var book = await _dbContext.Set<Book>().FindAsync(id);
             if (book != null)
             {
                 _dbContext.Books.Remove(book);
                 await _dbContext.SaveChangesAsync();
             }
+
         }
     }
-
-
 }

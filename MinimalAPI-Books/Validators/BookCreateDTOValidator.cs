@@ -1,15 +1,16 @@
 ﻿using FluentValidation;
 using MinimalAPI_Books.Data;
 using MinimalAPI_Books.Models;
+using MinimalAPI_Books.Models.DTO.BookDTO;
 using MinimalAPI_Books.Repositories;
 using System.Linq;
 
 namespace MinimalAPI_Books.Validators
 {
-    public class BookCreateValidator : AbstractValidator<Book>
+    public class BookCreateDTOValidator : AbstractValidator<BookCreateDTO>
     {
         private readonly BookstoreDbContext _dbContext;
-        public BookCreateValidator(BookstoreDbContext dbContext)
+        public BookCreateDTOValidator(BookstoreDbContext dbContext)
         {
             _dbContext = dbContext;
 
