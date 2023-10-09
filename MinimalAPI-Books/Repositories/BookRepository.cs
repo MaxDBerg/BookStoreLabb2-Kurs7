@@ -37,6 +37,7 @@ namespace MinimalAPI_Books.Repositories
                 .Include(b => b.Author)
                 .Include(b => b.Genres)
                 .ToListAsync();
+
             return _mapper.Map<IEnumerable<T>>(booksEntity);
         }
 

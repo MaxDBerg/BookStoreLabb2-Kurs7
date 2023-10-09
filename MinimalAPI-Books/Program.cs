@@ -19,6 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IRepository<BookReadDTO>, BookRepository<BookReadDTO>>();
+builder.Services.AddScoped<IRepository<BookReadDTOComplete>, BookRepository<BookReadDTOComplete>>();
 builder.Services.AddScoped<IRepository<BookCreateDTO>, BookRepository<BookCreateDTO>>();
 builder.Services.AddScoped<IRepository<BookUpdateDTO>, BookRepository<BookUpdateDTO>>();
 builder.Services.AddScoped<IRepository<AuthorReadDTO>, AuthorRepository<AuthorReadDTO>>();
@@ -61,7 +62,7 @@ app.MapGet("/books", async (IRepository<BookReadDTO> repository) =>
     return Results.Ok(book);
 });
 
-app.MapGet("/books/{id}", async (IRepository<BookReadDTO> repository, int id) =>
+app.MapGet("/books/{id}", async (IRepository<BookReadDTOComplete> repository, int id) =>
 {
     var book = await repository.GetByIdAsync(id);
 

@@ -9,8 +9,7 @@ namespace MinimalAPI_Books.Models.DTO.BookDTO
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public LanguageReadDTO Language { get; set; }
-        public AuthorReadDTO Author { get; set; }
-        public List<GenreReadDTO> Genres { get; set; }
+        public string Language { get; set; }
+        public string Author { get; set; }
     }
 }

@@ -21,10 +21,12 @@ namespace MinimalAPI_Books
             CreateMap<BookUpdateDTO, Book>()
                 .ForMember(destination => destination.Publication, option => option.Ignore()) // Exclude Publication during mapping
                 .ForMember(destination => destination.Genres, option => option.Ignore())
-                .ForMember(destination => destination.Genres, option => option.Ignore())
                 .ForMember(destination => destination.LanguageId, option => option.MapFrom(source => source.LanguageId))
                 .ForMember(destination => destination.AuthorId, option => option.MapFrom(source => source.AuthorId));
-            CreateMap<Book, BookReadDTO>();
+            CreateMap<Book, BookReadDTO>()
+                .ForMember(destination => destination.Language, option => option.MapFrom(source => source.Language.Name))
+                .ForMember(destination => destination.Author, option => option.MapFrom(source => source.Author.Name));
+            CreateMap<Book, BookReadDTOComplete>();
             CreateMap<Book, BookForAuthorReadDTO>();
             CreateMap<Book, BookForGenreReadDTO>();
             CreateMap<Book, BookForLanguageReadDTO>();

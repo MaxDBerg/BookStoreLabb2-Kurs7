@@ -1,0 +1,55 @@
+﻿@model MinimalAPI_Books.Models.DTO.BookDTO.BookCreateDTO
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>BookCreateDTO</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LanguageId" class="control-label">Language</label>
+                @Html.DropDownListFor(model => model.LanguageId, ViewBag.AvailableLanguages as IEnumerable<SelectListItem>,"Select Language", new { @class = "form-control" })
+                <span asp-validation-for="LanguageId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AuthorId" class="control-label">Author</label>
+                @Html.DropDownListFor(model => model.AuthorId, ViewBag.AvailableAuthors as IEnumerable<SelectListItem>,"Select Author", new { @class = "form-control" })
+                <span asp-validation-for="AuthorId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Genres</label>
+                <select asp-for="GenreIds" asp-items="ViewBag.AvailableGenres" multiple class="form-control">
+                </select>
+                <span asp-validation-for="GenreIds" class="text-danger"></span>
+                <small class="form-text text-muted">Hold down the Ctrl (windows) / Command (Mac) button to select multiple options.</small>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

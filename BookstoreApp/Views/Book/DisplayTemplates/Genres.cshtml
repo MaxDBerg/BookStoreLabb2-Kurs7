@@ -1,0 +1,4 @@
+﻿@using MinimalAPI_Books.Models.DTO.GenreDTO;
+@model List<GenreReadDTO>
+
+@string.Join(", ", Model.Select(genre => genre.Name))
