@@ -24,6 +24,7 @@ namespace MinimalAPI_Books
                 .ForMember(destination => destination.LanguageId, option => option.MapFrom(source => source.LanguageId))
                 .ForMember(destination => destination.AuthorId, option => option.MapFrom(source => source.AuthorId));
             CreateMap<Book, BookReadDTO>()
+                .ForMember(destination => destination.Genres, option => option.MapFrom(source => source.Genres.Select(genre => genre.Name)))
                 .ForMember(destination => destination.Language, option => option.MapFrom(source => source.Language.Name))
                 .ForMember(destination => destination.Author, option => option.MapFrom(source => source.Author.Name));
             CreateMap<Book, BookReadDTOComplete>();

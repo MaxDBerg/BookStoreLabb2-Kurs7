@@ -100,11 +100,6 @@ namespace BookstoreApp.Controllers
                 {
                     return RedirectToAction(nameof(Index));
                 }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Error creating the book.");
-                    return View();
-                }
             }
             return View(bookCreate);
         }
@@ -154,7 +149,6 @@ namespace BookstoreApp.Controllers
                     AuthorId = book.Author.Id,
                     GenreIds = book.Genres.Select(genre => genre.Id).ToList()
                 };
-
                 return View(mappedBook);
             }
             return View();
@@ -165,7 +159,7 @@ namespace BookstoreApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, BookUpdateDTO bookUpdate)
         {
-            try
+            if (ModelState.IsValid)
             {
                 string data = JsonConvert.SerializeObject(bookUpdate);
 
@@ -176,33 +170,24 @@ namespace BookstoreApp.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     return RedirectToAction(nameof(Index));
-                }   
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Error updating the book.");
-                    return View();
                 }
             }
-            catch
-            {
-                return View();
-            }
+            return View(bookUpdate);
         }
 
         // GET: BookController/Delete/5
         public ActionResult Delete(int id)
         {
-            HttpResponseMessage response = _client.DeleteAsync(_client.BaseAddress + "books/" + id).Result;
+            if (ModelState.IsValid)
+            {
+                HttpResponseMessage response = _client.DeleteAsync(_client.BaseAddress + "books/" + id).Result;
 
-            if (response.IsSuccessStatusCode)
-            {
-                  return RedirectToAction(nameof(Index));
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Error deleting the book.");
-                return RedirectToAction(nameof(Index));
-            }
+            return RedirectToAction(nameof(Index));
         }
 
         private List<T> GetSelectListFromApi<T>(string apiEndpoint)

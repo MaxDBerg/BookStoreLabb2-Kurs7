@@ -11,5 +11,6 @@ namespace MinimalAPI_Books.Models.DTO.BookDTO
         public string Description { get; set; }
         public string Language { get; set; }
         public string Author { get; set; }
+        public List<string> Genres { get; set; }
     }
 }
